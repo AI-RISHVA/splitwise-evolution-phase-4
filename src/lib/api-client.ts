@@ -66,7 +66,7 @@ export async function apiFetch<T = unknown>(
   if (auth && tokens.access) headers.set("Authorization", `Bearer ${tokens.access}`);
   let res: Response;
   try {
-    res = await fetch(`${API_URL}${path}`, { ...rest, headers, body: json !== undefined ? JSON.stringify(json) : rest.body });
+    res = await fetch(`${API_URL}${path}`, { ...rest, headers, body: json !== undefined ? JSON.stringify(json) : (rest.body ?? null) });
   } catch {
     throw new ApiError("Server se connect nahi ho paaya. Backend chalu hai?");
   }

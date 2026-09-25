@@ -48,10 +48,10 @@ function AuthPage() {
 
   const doRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (r.firstname.length < 3 || r.lastname.length < 3) return toast.error("First/last name kam se kam 3 characters");
-    if (!/^[A-Z0-9]{5,}$/.test(r.username)) return toast.error("Username: 5+ characters, sirf CAPITAL letters aur numbers");
-    if (!/^\d{10}$/.test(r.mobile_no)) return toast.error("Mobile number 10 digits ka hona chahiye");
-    if (!PASS_RE.test(r.password)) return toast.error("Password 8-15 chars, upper, lower, number aur special (@$!%*?&) chahiye");
+    if (r.firstname.length < 3 || r.lastname.length < 3) { toast.error("First/last name kam se kam 3 characters"); return; }
+    if (!/^[A-Z0-9]{5,}$/.test(r.username)) { toast.error("Username: 5+ characters, sirf CAPITAL letters aur numbers"); return; }
+    if (!/^\d{10}$/.test(r.mobile_no)) { toast.error("Mobile number 10 digits ka hona chahiye"); return; }
+    if (!PASS_RE.test(r.password)) { toast.error("Password 8-15 chars, upper, lower, number aur special (@$!%*?&) chahiye"); return; }
     setBusy(true);
     try {
       await register(r);
