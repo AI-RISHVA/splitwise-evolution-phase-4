@@ -62,19 +62,19 @@ function FriendsPage() {
 
   const send = useMutation({
     mutationFn: sendFriendRequest,
-    onSuccess: (_, u) => { toast.success(`Request bhej di: ${u}`); setSent(getSent()); },
+    onSuccess: (_, u) => { toast.success(`Friend request sent to @${u}.`); setSent(getSent()); },
     onError: (e) => toast.error(e.message),
   });
 
   const respond = useMutation({
     mutationFn: ({ u, a }: { u: string; a: FriendAction }) => respondFriendRequest(u, a),
-    onSuccess: (_, { u, a }) => { toast.success(a === "accepted" ? `${u} ab aapke friend hain` : `${u} ki request reject ki`); setManual(""); refresh(); },
+    onSuccess: (_, { u, a }) => { toast.success(a === "accepted" ? `@${u} has been added to your friends.` : `Friend request from @${u} was declined.`); setManual(""); refresh(); },
     onError: (e) => toast.error(e.message),
   });
 
   const remove = useMutation({
     mutationFn: removeFriend,
-    onSuccess: (_, u) => { toast.success(`${u} ko remove kiya`); refresh(); },
+    onSuccess: (_, u) => { toast.success(`@${u} has been removed from your friends.`); refresh(); },
     onError: (e) => toast.error(e.message),
     onSettled: () => setToRemove(null),
   });
@@ -86,20 +86,20 @@ function FriendsPage() {
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight">Friends</h1>
-        <p className="mt-1 text-muted-foreground">Logon ko dhoondhein, request bhejein aur apni friends list sambhalein.</p>
+        <p className="mt-1 text-muted-foreground">Find people, send connection requests and manage your friends and balances.</p>
       </div>
 
       <Card className="p-5">
         <form onSubmit={doSearch} className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input className="pl-9" placeholder="Username se dhoondhein (e.g. PRIYA)" value={q} onChange={(e) => setQ(e.target.value)} />
+            <Input className="pl-9" placeholder="Search by username (e.g. PRIYA)" value={q} onChange={(e) => setQ(e.target.value)} />
           </div>
-          <Button disabled={searching}>{searching ? "Searching..." : "Search"}</Button>
+          <Button disabled={searching}>{searching ? "Searching…" : "Search"}</Button>
         </form>
         {results && (
           <div className="mt-4 divide-y divide-border">
-            {results.length === 0 && <p className="py-4 text-sm text-muted-foreground">Koi user nahi mila.</p>}
+            {results.length === 0 && <p className="py-4 text-sm text-muted-foreground">No matching users found.</p>}
             {results.map((u) => {
               const isFriend = friendNames.has(u.username);
               const isSent = sent.includes(u.username);
@@ -126,7 +126,7 @@ function FriendsPage() {
 
       <Tabs defaultValue="friends">
         <TabsList>
-          <TabsTrigger value="friends">Friends {friends.data ? `(${friends.data.length})` : ""}</TabsTrigger>
+          <TabsTrigger value="friends">All friends {friends.data ? `(${friends.data.length})` : ""}</TabsTrigger>
           <TabsTrigger value="requests">Requests {pendingCount ? `(${pendingCount})` : ""}</TabsTrigger>
         </TabsList>
 
@@ -134,7 +134,7 @@ function FriendsPage() {
           <Card className="divide-y divide-border">
             {friends.isLoading && [0, 1, 2].map((i) => <div key={i} className="flex items-center gap-3 p-4"><Skeleton className="h-10 w-10 rounded-full" /><Skeleton className="h-4 w-40" /></div>)}
             {friends.error && <p className="p-6 text-sm text-destructive">{friends.error.message}</p>}
-            {friends.data?.length === 0 && <p className="p-8 text-center text-muted-foreground">Abhi koi friend nahi. Upar search karke add karein.</p>}
+            {friends.data?.length === 0 && <p className="p-8 text-center text-muted-foreground">You have no friends yet. Use the search above to add someone.</p>}
             {friends.data?.map((f) => (
               <div key={f.username} className="flex items-center gap-3 p-4">
                 <Avatar name={f.username} />
@@ -150,34 +150,34 @@ function FriendsPage() {
 
         <TabsContent value="requests" className="mt-4 space-y-4">
           <Card className="divide-y divide-border">
-            <p className="p-4 text-sm font-semibold">Aayi hui requests</p>
+            <p className="p-4 text-sm font-semibold">Incoming requests</p>
             {CAN_LIST_INCOMING ? (
               <>
-                {incoming.data?.length === 0 && <p className="p-6 text-center text-sm text-muted-foreground">Koi pending request nahi.</p>}
+                {incoming.data?.length === 0 && <p className="p-6 text-center text-sm text-muted-foreground">No pending requests.</p>}
                 {incoming.data?.map((u) => (
                   <div key={u} className="flex items-center gap-3 p-4">
                     <Avatar name={u} />
                     <p className="flex-1 font-semibold">@{u}</p>
                     <Button size="sm" disabled={respond.isPending} onClick={() => respond.mutate({ u, a: "accepted" })}><Check className="mr-1 h-4 w-4" /> Accept</Button>
-                    <Button size="sm" variant="outline" disabled={respond.isPending} onClick={() => respond.mutate({ u, a: "rejected" })}><X className="mr-1 h-4 w-4" /> Reject</Button>
+                    <Button size="sm" variant="outline" disabled={respond.isPending} onClick={() => respond.mutate({ u, a: "rejected" })}><X className="mr-1 h-4 w-4" /> Decline</Button>
                   </div>
                 ))}
               </>
             ) : (
               <div className="space-y-3 p-4">
-                <p className="text-sm text-muted-foreground">Jis user ne aapko request bheji hai uska username daal kar accept ya reject karein.</p>
+                <p className="text-sm text-muted-foreground">Enter the username of the person who sent you a request, then accept or decline it.</p>
                 <div className="flex gap-2">
                   <Input placeholder="USERNAME" value={manual} onChange={(e) => setManual(e.target.value.toUpperCase())} />
                   <Button disabled={!manual || respond.isPending} onClick={() => respond.mutate({ u: manual, a: "accepted" })}>Accept</Button>
-                  <Button variant="outline" disabled={!manual || respond.isPending} onClick={() => respond.mutate({ u: manual, a: "rejected" })}>Reject</Button>
+                  <Button variant="outline" disabled={!manual || respond.isPending} onClick={() => respond.mutate({ u: manual, a: "rejected" })}>Decline</Button>
                 </div>
               </div>
             )}
           </Card>
 
           <Card className="divide-y divide-border">
-            <p className="p-4 text-sm font-semibold">Aapki bheji hui requests</p>
-            {sent.length === 0 && <p className="p-6 text-center text-sm text-muted-foreground">Abhi koi request nahi bheji.</p>}
+            <p className="p-4 text-sm font-semibold">Sent requests</p>
+            {sent.length === 0 && <p className="p-6 text-center text-sm text-muted-foreground">You haven’t sent any requests yet.</p>}
             {sent.map((u) => (
               <div key={u} className="flex items-center gap-3 p-4">
                 <Avatar name={u} />
@@ -193,8 +193,8 @@ function FriendsPage() {
       <AlertDialog open={!!toRemove} onOpenChange={(o) => !o && setToRemove(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>@{toRemove} ko remove karein?</AlertDialogTitle>
-            <AlertDialogDescription>Balance settle hone par hi friend remove ho sakta hai.</AlertDialogDescription>
+            <AlertDialogTitle>Remove @{toRemove}?</AlertDialogTitle>
+            <AlertDialogDescription>This person can only be removed once all outstanding balances between you are settled.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -209,11 +209,11 @@ function FriendsPage() {
 }
 
 function BalanceLabel({ value }: { value: number }) {
-  if (Math.abs(value) < 0.01) return <span className="text-sm text-muted-foreground">Settled</span>;
+  if (Math.abs(value) < 0.01) return <span className="text-sm text-muted-foreground">Settled up</span>;
   const owesYou = value > 0;
   return (
     <div className="text-right">
-      <p className="text-xs text-muted-foreground">{owesYou ? "owes you" : "you owe"}</p>
+      <p className="text-xs text-muted-foreground">{owesYou ? "Owes you" : "You owe"}</p>
       <p className={`font-bold ${owesYou ? "text-primary" : "text-destructive"}`}>₹{Math.abs(value).toFixed(2)}</p>
     </div>
   );
