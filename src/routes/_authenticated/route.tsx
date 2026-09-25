@@ -26,7 +26,7 @@ function AppLayout() {
   }, [navigate]);
   const { data: me } = useQuery({ queryKey: ["me"], queryFn: getMe, enabled: ready, retry: false });
 
-  if (!ready) return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Loading...</div>;
+  if (!ready) return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Loading your workspace…</div>;
 
   const doLogout = async () => {
     await logout();
@@ -43,7 +43,7 @@ function AppLayout() {
           </Link>
           {soon.map((s) => (
             <div key={s.label} className="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground/70">
-              <s.icon className="h-4 w-4" /> {s.label} <span className="ml-auto text-[10px] uppercase">soon</span>
+              <s.icon className="h-4 w-4" /> {s.label} <span className="ml-auto text-[10px] uppercase">Coming soon</span>
             </div>
           ))}
         </nav>
@@ -51,10 +51,10 @@ function AppLayout() {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
           <div className="text-sm text-muted-foreground">
-            {DEMO_MODE && <span className="mr-3 rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">Demo data</span>}
-            Hi, <span className="font-semibold text-foreground">{me ? `${me.firstname} ${me.lastname}` : "..."}</span>
+            {DEMO_MODE && <span className="mr-3 rounded-full bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">Demo environment</span>}
+            Signed in as <span className="font-semibold text-foreground">{me ? `${me.firstname} ${me.lastname}` : "…"}</span>
           </div>
-          <Button variant="ghost" size="sm" onClick={doLogout}><LogOut className="mr-2 h-4 w-4" /> Logout</Button>
+          <Button variant="ghost" size="sm" onClick={doLogout}><LogOut className="mr-2 h-4 w-4" /> Sign out</Button>
         </header>
         <main className="flex-1 p-6 md:p-8"><Outlet /></main>
       </div>

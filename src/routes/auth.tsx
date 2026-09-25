@@ -48,14 +48,14 @@ function AuthPage() {
 
   const doRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (r.firstname.length < 3 || r.lastname.length < 3) { toast.error("First/last name kam se kam 3 characters"); return; }
-    if (!/^[A-Z0-9]{5,}$/.test(r.username)) { toast.error("Username: 5+ characters, sirf CAPITAL letters aur numbers"); return; }
-    if (!/^\d{10}$/.test(r.mobile_no)) { toast.error("Mobile number 10 digits ka hona chahiye"); return; }
-    if (!PASS_RE.test(r.password)) { toast.error("Password 8-15 chars, upper, lower, number aur special (@$!%*?&) chahiye"); return; }
+    if (r.firstname.length < 3 || r.lastname.length < 3) { toast.error("First and last name must be at least 3 characters long."); return; }
+    if (!/^[A-Z0-9]{5,}$/.test(r.username)) { toast.error("Username must be at least 5 characters, using uppercase letters and numbers only."); return; }
+    if (!/^\d{10}$/.test(r.mobile_no)) { toast.error("Please enter a valid 10-digit mobile number."); return; }
+    if (!PASS_RE.test(r.password)) { toast.error("Password must be 8–15 characters and include an uppercase letter, a lowercase letter, a number and a special character (@$!%*?&)."); return; }
     setBusy(true);
     try {
       await register(r);
-      toast.success("Account ban gaya! Ab login karein.");
+      toast.success("Account created successfully. Please sign in to continue.");
       setLu(r.username);
       setLp("");
       setTab("login");
@@ -73,8 +73,8 @@ function AuthPage() {
       <div className="hidden flex-col justify-between bg-primary p-12 text-primary-foreground lg:flex">
         <div className="flex items-center gap-2 text-xl font-bold"><Wallet className="h-6 w-6" /> SplitEase</div>
         <div>
-          <h1 className="text-4xl font-extrabold leading-tight">Hisaab saaf,<br />dosti pakki.</h1>
-          <p className="mt-4 max-w-sm opacity-80">Friends aur groups ke saath kharche baantein, balance dekhein aur ek click me settle karein.</p>
+          <h1 className="text-4xl font-extrabold leading-tight">Split expenses,<br />not friendships.</h1>
+          <p className="mt-4 max-w-sm opacity-80">Share costs with friends and groups, track balances in real time, and settle up in a single click.</p>
         </div>
         <p className="text-sm opacity-70">© SplitEase</p>
       </div>
@@ -82,25 +82,25 @@ function AuthPage() {
         <div className="w-full max-w-md">
           {DEMO_MODE && (
             <div className="mb-4 rounded-lg border border-border bg-secondary p-3 text-sm text-secondary-foreground">
-              Demo mode: nakli data. Login: <b>DEMO1</b> / <b>Demo@123</b>
+              Demo environment with sample data. Sign in with <b>DEMO1</b> / <b>Demo@123</b>
             </div>
           )}
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="register">Register</TabsTrigger>
+              <TabsTrigger value="login">Sign in</TabsTrigger>
+              <TabsTrigger value="register">Create account</TabsTrigger>
             </TabsList>
             <TabsContent value="login">
               <form onSubmit={doLogin} className="mt-6 space-y-4">
-                <h2 className="text-2xl font-bold">Login</h2>
+                <h2 className="text-2xl font-bold">Sign in to your account</h2>
                 <div className="space-y-2"><Label>Username</Label><Input value={lu} onChange={(e) => setLu(e.target.value.toUpperCase())} required /></div>
                 <div className="space-y-2"><Label>Password</Label><Input type="password" value={lp} onChange={(e) => setLp(e.target.value)} required /></div>
-                <Button className="w-full" disabled={busy}>{busy ? "Please wait..." : "Login"}</Button>
+                <Button className="w-full" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</Button>
               </form>
             </TabsContent>
             <TabsContent value="register">
               <form onSubmit={doRegister} className="mt-6 space-y-4">
-                <h2 className="text-2xl font-bold">Create account</h2>
+                <h2 className="text-2xl font-bold">Create your account</h2>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2"><Label>First name</Label><Input value={r.firstname} onChange={set("firstname")} required /></div>
                   <div className="space-y-2"><Label>Last name</Label><Input value={r.lastname} onChange={set("lastname")} required /></div>
@@ -113,11 +113,11 @@ function AuthPage() {
                       <SelectContent><SelectItem value="male">Male</SelectItem><SelectItem value="female">Female</SelectItem><SelectItem value="other">Other</SelectItem></SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2"><Label>Mobile</Label><Input value={r.mobile_no} onChange={set("mobile_no")} maxLength={10} required /></div>
+                  <div className="space-y-2"><Label>Mobile number</Label><Input value={r.mobile_no} onChange={set("mobile_no")} maxLength={10} required /></div>
                 </div>
-                <div className="space-y-2"><Label>Email</Label><Input type="email" value={r.email} onChange={set("email")} required /></div>
+                <div className="space-y-2"><Label>Email address</Label><Input type="email" value={r.email} onChange={set("email")} required /></div>
                 <div className="space-y-2"><Label>Password</Label><Input type="password" value={r.password} onChange={set("password")} required /></div>
-                <Button className="w-full" disabled={busy}>{busy ? "Please wait..." : "Register"}</Button>
+                <Button className="w-full" disabled={busy}>{busy ? "Creating account…" : "Create account"}</Button>
               </form>
             </TabsContent>
           </Tabs>
