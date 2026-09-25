@@ -1,6 +1,6 @@
 // Backend base URL. Set VITE_API_URL (e.g. your ngrok / Render URL) to use the real FastAPI backend.
 // When empty, the app runs in demo-data mode.
-export const API_URL = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") ?? "";
+export const API_URL = (import.meta.env["VITE_API_URL"] as string | undefined)?.replace(/\/$/, "") ?? "";
 export const DEMO_MODE = !API_URL;
 
 const ACCESS = "sw_access_token";
@@ -28,10 +28,10 @@ export class ApiError extends Error {}
 function extractMessage(body: unknown, fallback: string): string {
   if (!body || typeof body !== "object") return fallback;
   const b = body as Record<string, unknown>;
-  if (typeof b.error === "string") return b.error.trim();
-  if (typeof b.message === "string") return b.message;
-  if (typeof b.detail === "string") return b.detail;
-  if (Array.isArray(b.detail) && b.detail[0]?.msg) return String(b.detail[0].msg).replace(/^Value error, /, "");
+  if (typeof b["error"] === "string") return b["error"].trim();
+  if (typeof b["message"] === "string") return b["message"];
+  if (typeof b["detail"] === "string") return b["detail"];
+  if (Array.isArray(b["detail"]) && b["detail"][0]?.msg) return String(b["detail"][0].msg).replace(/^Value error, /, "");
   return fallback;
 }
 
