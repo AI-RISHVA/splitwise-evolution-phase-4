@@ -68,12 +68,12 @@ export async function apiFetch<T = unknown>(
   try {
     res = await fetch(`${API_URL}${path}`, { ...rest, headers, body: json !== undefined ? JSON.stringify(json) : (rest.body ?? null) });
   } catch {
-    throw new ApiError("Server se connect nahi ho paaya. Backend chalu hai?");
+    throw new ApiError("Unable to reach the server. Please check your connection and try again.");
   }
   if (res.status === 401 && auth) {
     if (!retried && (await tryRefresh())) return apiFetch<T>(path, init, true);
     onAuthFail();
-    throw new ApiError("Session expire ho gaya, dobara login karein.");
+    throw new ApiError("Your session has expired. Please sign in again.");
   }
   const body = await res.json().catch(() => null);
   if (!res.ok) throw new ApiError(extractMessage(body, `Request failed (${res.status})`));
